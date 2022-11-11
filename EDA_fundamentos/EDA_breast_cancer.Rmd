@@ -1,0 +1,15 @@
+---
+title: "EDA_breast_cancer"
+author: "Daniel Quesada"
+date: "2022-11-11"
+output: html_document
+---
+
+```{r s}
+Breast_Cancer<- read.csv(file = 'Breast_Cancer.csv')
+head(Breast_Cancer)
+```
+
+```{R }
+describe(Breast_Cancer)
+```
