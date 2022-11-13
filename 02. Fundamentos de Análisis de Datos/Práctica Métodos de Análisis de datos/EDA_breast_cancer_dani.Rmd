@@ -1,0 +1,51 @@
+---
+title: "EDA_breast_cancer"
+author: "Daniel Quesada"
+date: "2022-11-11"
+output: html_document
+---
+
+```{r s}
+Breast_Cancer<- read.csv('Breast_Cancer.csv')
+head(Breast_Cancer)
+```
+
+```{R }
+str(Breast_Cancer)
+```
+
+```{r}
+Breast_Cancer$Status <-factor(Breast_Cancer$Status)
+levels(Breast_Cancer$Status)
+```
+
+
+
+```{R }
+#levels(Breast_Cancer$Status)
+summary(Breast_Cancer)
+```
+
+```{r}
+#table(Breast_Cancer$Status)
+prop.table(table(Breast_Cancer$Status))
+#table(Breast_Cancer$Status,Breat_Cancer$Race)
+```
+
+```{r}
+#boxplot(Breast_Cancer$Age)
+hist(Breast_Cancer$Age)
+```
+
+
+```{r}
+dim(Breast_Cancer)
+```
+
+
+
+https://github.com/carmenlancho/MDS
+Iris_sinlogo ->raw->
+
+
+
