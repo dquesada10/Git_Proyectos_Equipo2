@@ -1,0 +1,207 @@
+---
+title: "Práctica 2 - Modelos de distribución de probabilidad - **Grupo 2**"
+author: "Autores: Laura Martín, Desiderio Nevado y Daniel Quesada"
+date: 'Fecha de la publicación: 24/10/2022'
+output: html_document
+---
+
+
+Importamos las librerias y guardamos el dataset
+```{R }
+library(PASWR2)
+library(lattice)
+library(ggplot2)
+datos <- CHIPS
+```
+
+Analizamos a alto nivel la forma del dataset
+```{R }
+head(datos,5)
+summary(datos)
+```
+
+## Actividad 1
+* **Realiza un histograma de todas las filas de la variable number y comenta si a simple vista nos interesa separar los datos o no. Haz un gráfico de cajas y comenta qué nos cuenta sobre los datos.**
+
+```{R echo=FALSE}
+hist(datos[,"number"],main ="Total")
+```
+```{R echo=FALSE}
+boxplot(datos[,"number"],main ="Total")
+abline(h=mean(datos[,"number"]))
+```
+Observando el boxplot, la media esta ligeramente por encima de la mediana debido a dos valores atípicos que desplazan un poco la distribución a la izquierda.
+Mirando el histograma también se observa el efecto de los dos datos atípicos al desplazar la distribución.
+Como se puede observar el 50% de los valores se encuentran entre 312 y 369,8
+
+```{R }
+mean(datos[,"number"])
+summary(datos[,"number"])
+```
+
+* **Crea dos conjuntos de datos diferentes para los dos métodos, por ejemplo datosI y datosII.**
+
+Creamos los datasets
+```{R }
+datosI <-datos[datos$method=="techniqueI","number"]
+datosII <-datos[datos$method=="techniqueII","number"]
+```
+
+* **Realiza ahora un histograma de cada uno de los tipos y comenta si te parece que los datos siguen una distribucion normal**
+
+Creamos los histogramas de los diferentes tipos
+```{R echo=FALSE}
+hist(datosI,main ="datos Tecnica I",
+    # breaks = 4
+    breaks = c(250,290,330,370,410,460,500)
+     )
+hist(datosII,main ="datos Tecnica II",
+    #breaks = 5
+   breaks = c(250,290,330,370,410,460,500)
+     )
+```
+
+
+Los dos histogramas seguirían en principio distribuciones normales. En el segundo dataset habría que eliminarle los 2 datos atípicos.
+
+* **Confirma tus conclusiones con alguna/s de las herramientas vistas en clase (test de normalidad, gráfico Quantil-Quantil, tests de normalidad, …)**
+
+Hacemos test de normalidad para datosI y como se puede ver pasa los tests. También en el QQplot se observa que los datos siguen la distribución normal.
+```{R echo=FALSE}
+library(fBasics)
+normalTest(datosI, method = c("sw", "jb"))
+qqnorm(datosI, pch = 1, frame = FALSE)
+qqline(datosI, col = "steelblue", lwd = 2)
+```
+
+Hacemos test de normalidad para datosII y pasa los tests aunque con un p valor más bajo debido a los dos datos atípicos como se observa en el QQplot.
+```{R echo=FALSE}
+normalTest(datosII, method = c("sw", "jb"))
+qqnorm(datosII, pch = 1, frame = FALSE)
+qqline(datosII, col = "steelblue", lwd = 2)
+```
+
+## Actividad 2
+
+* **Realiza una estimación puntual de la media y la desviación típica de la población del número de chips para cada método**
+
+```{R }
+library("tidyr")
+library("dplyr")
+datos %>%
+   group_by(method) %>%
+   summarise(media=mean(number),desv_tip=sd(number))
+```
+Como se puede ver la media de los chips del método II es más alta pero tiene también mayor dispersión sobre esta.
+
+* **Calcula la probabilidad de que en una placa de silicio a la que se le ha aplicado el método techniqueI tomada al azar tenga más de 390 chips utilizables.**
+
+```{R }
+1 - pnorm(390,mean(datosI),sd(datosI))
+```
+
+La probabilidad de que una placa de silicio tenga más de 390 chips con el método I es únicamente de 5,02%, lo cual no es muy probable.
+
+* **Calcula la probabilidad de que en una placa de silicio a la que se le ha aplicado el método techniqueII tomada al azar tenga menos de 150 chips utilizables.**
+
+```{R }
+pnorm(150,mean(datosII),sd(datosII))
+```
+
+Esto sería aún menos probable, ya que solo en el 0,1% de los casos la placa de silicio puede tener menos de 150 chips
+
+* **Encuentra cuál es el número máximo de chips utilizables del 3% de las placas de silicio a las que se la han aplicado el método techniqueII del tipo B que tienen menos chips utilizables (ayuda: esto es equivalente a encontrar el cuantil 0.03 de la distribución)**
+
+```{R }
+qnorm(0.03,mean(datosII),sd(datosII))
+```
+
+El número máximo de chips utilizables sería 232 del 3% de las placas de silicio con el método II con menos chips.
+
+## Actividad 3
+
+**Vamos a centrarnos ahora en las placas de silicio del método techniqueII. Supongamos que un número de chips utilizables por debajo de 150 no es aceptable para el receptor de la placa de silicio. En la actividad anterior hemos calculado la probabilidad  de que esto suceda. Entonces, si tomamos una placa de silicio del método II al azar y comprobamos si tiene menos de 150 chips utilizables, estamos realizando un experimento de Bernoulli con probabilidad $p$.**
+
+* **Calcula la probabilidad de que en un lote de 10 placas de silicio, no haya ninguna defectuosa (ayuda: distribución binomial).**
+
+```{R }
+x <-pnorm(150,mean(datosII),sd(datosII))
+x
+pbinom(0,10,x)
+```
+
+La probabilidad de que tenga 150 o menos chips con el método II la placa de silicio ya la habiamos calculado antes y era muy baja (0,1%). Es por esto que la probabilidad de que en 10 placas solo tengamos alguna con 150 chips o menos (la consideración de defectuosa) es casi 0: 99%
+
+* **Imagina que las placas de silicio se fabrican en serie e independientemente. ¿Cuál es la probabilidad de que sean necesario examinar 10 placas de silicio para que aparezca la primera placa de silicio defectuosa? (ayuda: distribución geométrica.)**
+
+```{R }
+pgeom(10,x)
+```
+La probabilidad sería muy baja, un 1%
+
+* **Supongamos que en una caja de 30 placas de silicio van 3 defectuosas. ¿Cuál es la probabilidad de que al tomar una muestra sin reposición de 6 placas de silicio al menos una sea defectuosa? (ayuda: distribución hipergeométrica)**
+
+```{R }
+1- phyper(0,3,27,6)
+```
+En este caso posible pero difícil de que ocurra (la probabilidad de defectuosa es de 1 entre mil y aqui se asime en la muestra un 10%), la probabilidad de que al hacer un prueba de calidad de 6 placas sobre esta envio de 30 salieran al menos una defectuosa es bastante alto ya que estariamos hablando de un 50%.
+
+## Actividad 4
+
+**Seguimos con las placas de silicio del método II, pero en vez de hacer experimentos de Bernoulli queremos estudiar el número de placas de silicio defectuosas fabricadas cada día. Supongamos que se fabrican 3000 placas de silicio cada día. Entonces, cada día en promedio se estarán produciendo aproximadamente $3000 x p$ placas de silicio defectuosas, y el número de placas de silicio defectuosas por día sigue una distribución de Poisson. Tomemos 3 como ese promedio de placas de silicio defectuosas cada día. (ayuda: repasa qué modelo de distribución modeliza estos recuentos de eventos raros con una tasa media por unidad de tiempo)**
+
+* **¿Cuál es la probabilidad de que un día se produzcan más de 5 placas de silicio defectuosas?**
+
+```{R }
+lambda <-3
+1- ppois(5,lambda)
+```
+Como es un número de eventos raros (variable discreta) que se dan en un intervalo de tiempo, es una variable aleatoria que típicamente sigue una distribución Poisson. En esta distribución el parámetro es $\lambda$ y como es la media de de estos eventos en esa unidad de tiempo en este caso nos dan que es 3.
+
+La probabilidad de que se den más de 5 placas defectosas  es de un 8,39%.
+
+* **¿Cuál es la probabilidad de que un día no salga ninguna placa de silicio defectuosa de la fábrica?**
+
+```{R }
+ppois(0,lambda)
+```
+La probabilidad es casi de un 5%. Por esto, es algo bastante posible.
+
+* **La fábrica funciona de lunes a viernes. ¿Qué distribución sigue el número de placas de silicio defectuosas por semana? Justifica qué propiedad se aplica.**
+
+Como la distribucion Poisson tiene la propiedad aditiva entonces lambda es $3*5$ días
+```{R }
+lambda_sem <- lambda*5
+ppois(0,lambda_sem)
+```
+De esta manera si por ejemplo quisieramos calcular la probabilidad de que en una semana laboral no saliera ningún placa defectuosa sería muy cercana a 0%, es decir, muy improbable.
+
+## Actividad 5
+
+**El departamento de I+D de la empresa que fabrica las placas de silicio con el método II está investigando nuevos materiales y métodos para mejorar la calidad de las placas de silicio. En particular, quieren llegar a diseñar una placa de silicio cuya duración siga una distribución de Weibull con parámetros $a=9$ y $b=382$.**
+
+* **Realiza una simulación de la producción semanal de placas de silicio (recuerda: 5 días de produccción, a 3000 placas de silicio por día). Guarda los datos en un vector.**
+
+```{R }
+produccion_sem <- 3000*5
+prod_sem <- rweibull(produccion_sem,9,382)
+head(prod_sem)
+```
+Asumiendo que el número de chips que tiene cada placa con el método II sigue una weibull podemos hacer un vector de con el número de chips que tendría cada una de las placas producidas en una semana.
+
+
+* **Con este nuevo proceso, ¿se mejora realmente la duración media de las placas de silicio? (ayuda: puedes usar los datos simulados o la expresión de la esperanza de una Weibull) **
+
+Hay una ligera mejora pero la diferencia no parece significativa al menos en términos medios, ya que la mejora sería de un 0,4%
+```{R }
+mean(prod_sem)
+mean(datosII)
+mean(prod_sem)/mean(datosII)-1
+```
+* **Los ingenieros no lo tienen muy claro (parece que la diferencia no es tanta en promedio y los nuevos materiales son costosos). Para demostrarles que merece la pena, calcula la proporción de placas de silicio defectuosas que producirá probablemente el nuevo proceso y compárala con el anterior (la  que calculamos en la actividad 2)**
+
+Viendo los resultados parece que sí que disminuye la probabilidad de obtener placas defectuosas a cerca de 0% por lo que se ve una mejora más clara
+```{R }
+print(paste("probabilidad defectuosa del ejercicio 2 (valores < a 150): ",sprintf("%1.2f%%",100*pnorm(150,mean(datosII),sd(datosII)))))
+print(paste("probabilidad defectuosa con la mejora (valores < a 150): ",pnorm(150,mean(prod_sem),sd(prod_sem))))
+```
