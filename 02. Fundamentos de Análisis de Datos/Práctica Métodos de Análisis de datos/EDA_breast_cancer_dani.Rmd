@@ -1,9 +1,19 @@
 ---
 title: "EDA_breast_cancer"
-author: "Daniel Quesada"
-date: "2022-11-11"
+author: "Autor: Daniel Quesada"
+date: "Fecha de la publicación: `r Sys.Date()`"
 output: html_document
 ---
+
+# Contexto
+El dataset objeto de este Exploratory Data Analysis (EDA) es una muestra de mujeres pacientes de cancer de mama de entre 2006 y 2010. Entre las variables de la BBDD se encuentra si el paciente sobrevivió al cancer o no.
+
+Este dataset ha sido recogido de Kaggle. Se encuentra en la siguiente dirección:
+
+[Dataset Breast Cancer](https://www.kaggle.com/datasets/reihanenamdari/breast-cancer)
+
+
+
 
 ```{r s}
 Breast_Cancer<- read.csv('Breast_Cancer.csv')
