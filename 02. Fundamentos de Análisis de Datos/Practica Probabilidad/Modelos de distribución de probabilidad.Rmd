@@ -30,9 +30,13 @@ hist(datos[,"number"],main ="Total")
 boxplot(datos[,"number"],main ="Total")
 abline(h=mean(datos[,"number"]))
 ```
+
+
 Observando el boxplot, la media esta ligeramente por encima de la mediana debido a dos valores atípicos que desplazan un poco la distribución a la izquierda.
 Mirando el histograma también se observa el efecto de los dos datos atípicos al desplazar la distribución.
 Como se puede observar el 50% de los valores se encuentran entre 312 y 369,8
+
+
 
 ```{R }
 mean(datos[,"number"])
