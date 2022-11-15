@@ -1,5 +1,5 @@
 ---
-title: "EDA_breast_cancer"
+title: "EDA del Dataset del Cancer de Mama"
 author: "Autor: Daniel Quesada"
 date: "Fecha de la publicación: `r Sys.Date()`"
 output: html_document
@@ -12,29 +12,113 @@ Este dataset ha sido recogido de Kaggle. Se encuentra en la siguiente dirección
 
 [Dataset Breast Cancer](https://www.kaggle.com/datasets/reihanenamdari/breast-cancer)
 
+# Descripción de las variables
+Kaggle proporciona un diccionario de las variables para el mejor entendimiento del Dataset:
+
+* **Race**: recoge la raza de las mujeres del dataset. Se divide white, black y other
+* **Marital Status**: Representa el estado civil de la mujer. Puede tomar los valores de Married, Divorced, Single, Windowed o Separated
+* **T Stage**: La T representa el tamaño y la extension del tumor principal (T de tumor). Puede tomar los valores T1, T2, T3 y T4. Cuanto mas grande el número, mayor es el tumor. Si es T1 el tumor es de 2 cm o menos a traves. Si es T2 entre 2 y 5 cm. Si es T3 mas de 5 cms. Sobre T4 no se dispone descripción
+* **N Stage**:
+
+
+N Stage: The main tumor is usually called the primary tumor. The N refers to the the number of nearby lymph nodes that have cancer. The M refers to whether the cancer has metastasized. This means that the cancer has spread from the primary tumor to other parts of the body.N1, N2, N3: Refers to the number and location of lymph nodes that contain cancer. The higher the number after the N, the more lymph nodes that contain cancer.
+
+6th Stage: 0 = IIA , 1= IIIA, 2 = IIIC , 3=IIB and 4 = IIIB Stage groups for breast cancer,Doctors assign the stage of the cancer by combining the T, N, and M classifications (see above), the tumor grade, and the results of ER/PR and HER2 testing. This information is used to help determine your prognosis (see Diagnosis).Most patients are anxious to learn the exact stage of the cancer. If you have surgery as the first treatment for your cancer, your doctor will generally confirm the stage of the cancer when the testing after surgery is finalized, usually about 5 to 7 days after surgery. When systemic treatment is given before surgery, which is typically with medications and is called neoadjuvant therapy, the stage of the cancer is primarily determined clinically. Doctors may refer to stage I to stage IIA cancer as "early stage" and stage IIB to stage III as "locally advanced."
+
+Stage IIA Any 1 of these conditions:
+
+There is no evidence of a tumor in the breast, but the cancer has spread to 1 to 3 axillary lymph nodes. It has not spread to distant parts of the body (T0, N1, M0).
+
+The tumor is 20 mm or smaller and has spread to 1 to 3 axillary lymph nodes (T1, N1, M0).
+
+The tumor is larger than 20 mm but not larger than 50 mm and has not spread to the axillary lymph nodes (T2, N0, M0).
+
+Stage IIB Either of these conditions:
+
+The tumor is larger than 20 mm but not larger than 50 mm and has spread to 1 to 3 axillary lymph nodes (T2, N1, M0).
+
+The tumor is larger than 50 mm but has not spread to the axillary lymph nodes (T3, N0, M0).
+
+Stage IIIA The tumor of any size has spread to 4 to 9 axillary lymph nodes or to internal mammary lymph nodes. It has not spread to other parts of the body (T0, T1, T2, or T3; N2; M0). Stage IIIA may also be a tumor larger than 50 mm that has spread to 1 to 3 axillary lymph nodes (T3, N1, M0).
+
+Stage IIIB The tumor has spread to the chest wall or caused swelling or ulceration of the breast, or it is diagnosed as inflammatory breast cancer. It may or may not have spread to up to 9 axillary or internal mammary lymph nodes. It has not spread to other parts of the body (T4; N0, N1, or N2; M0).
+
+Stage IIIC A tumor of any size that has spread to 10 or more axillary lymph nodes, the internal mammary lymph nodes, and/or the lymph nodes under the collarbone. It has not spread to other parts of the body (any T, N3, M0).
+
+differentiate 0 =Poorly differentiated, 1 = Moderately differentiated, 2= Well differentiated and 3 = Undifferentiated
+
+Grade:
+
+What does cancer grade mean?
+Breast cancers are given a grade according to:
+
+1.1 How different the cancer cells are to normal breast cells 1.2 How quickly they are growing
+
+The grade of a cancer is different to the cancer stage. A cancer’s grade is determined when a doctor (pathologist) looks at the cancer cells under a microscope, using tissue from a biopsy or after breast cancer surgery.
+
+What are the different grades of breast cancer?
+There are three grades of invasive breast cancer:
+
+Grade 1 looks most like normal breast cells and is usually slow growing Grade 2 looks less like normal cells and is growing faster Grade 3 looks different to normal breast cells and is usually fast growing
+
+Or we can say that a low grade number (grade 1) usually means the cancer is slower-growing and less likely to spread. A high grade number (grade 3) means a faster-growing cancer that's more likely to spread. An intermediate grade number (grade 2) means the cancer is growing faster than a grade 1 cancer but slower than a grade 3 cancer.
+
+Sometimes the grade given to a cancer after a biopsy can change after surgery. This is because after surgery there’s more tissue for the pathologist to look at, which can give them more detailed information about the cancer.
+
+A Stage: 0 =Regional and 1 = Distant
+
+This parameters shows Stages of Cancer and is a summary of all data , it is an attribute that involves T,N and Grade data.
+
+Regional: The cancer has spread outside the breast to nearby structures or lymph nodes.
+
+Distant: The cancer has spread to distant parts of the body such as the lungs, liver or bones.
+
+Estrogen Status: 0 =Estrogen positive and 1 = Estrogen negative
+
+Estrogen positive : - Cancer cells that are ER positive may need estrogen to grow. These cells may stop growing or die when treated with substances that block the binding and actions of estrogen. Also called estrogen receptor positive.
+Estrogen negative : - negative breast cancers are a group of tumors with poor prognosis and fewer cancer prevention and treatment strategies compared to ER-positive tumors.
+Progesterone Status: 0 = Progesterone positive and 1 = Progesterone negative
+
+Progesterone positive:- This type of breast cancer is sensitive to progesterone, and the cells have receptors that allow them to use this hormone to grow. Treatment with endocrine therapy blocks the growth of the cancer cells.
+
+Progesterone negative: - This type of breast cancers have no estrogen or progesterone receptors. Treatment with hormone therapy drugs is not helpful for these cancers. These cancers tend to grow faster than hormone receptor-positive cancers.
+
+Status: 0 = Alive and 1 = dead
+
+Hormone receptor-negative (or hormone-negative): - breast cancers have no estrogen or progesterone receptors. Treatment with hormone therapy drugs is not helpful for these cancers. These cancers tend to grow faster than hormone receptor-positive cancers. If they come back after treatment, it’s often in the first few years
 
 
 
-```{r s}
+
+Lo primero importamos ciertas librerias que nos pueden ser utiles:
+```{r}
+library(dplyr)
+```
+
+```{r}
 Breast_Cancer<- read.csv('Breast_Cancer.csv')
 head(Breast_Cancer)
 ```
 
-```{R }
+```{r}
 str(Breast_Cancer)
 ```
+Como se observar de las 16 variables del dataset hay 5 variables integer y el resto son categoricas pero las ha importado como caracter. Además, se puede observar que la variable Reginol.Node.Positive está mal escrita así que vamos a renombrarla.
 
 ```{r}
-Breast_Cancer$Status <-factor(Breast_Cancer$Status)
-levels(Breast_Cancer$Status)
+Breast_Cancer<-rename(Breast_Cancer,Regional.Node.Positive=Reginol.Node.Positive)
+str(Breast_Cancer)
 ```
-
-
-
-```{R }
-#levels(Breast_Cancer$Status)
+Ahora vamos a convertir las varibles chr en factores:
+```{r}
+Breast_Cancer[sapply(Breast_Cancer, is.character)] <- lapply(Breast_Cancer[sapply(Breast_Cancer, is.character)],as.factor)
+str(Breast_Cancer)
+```
+Con las variables bien categorizadas como factores podemos ver su distribucion:
+```{r}
 summary(Breast_Cancer)
 ```
+A simple vista se puede observar que no hay N/As en los registros
 
 ```{r}
 #table(Breast_Cancer$Status)
