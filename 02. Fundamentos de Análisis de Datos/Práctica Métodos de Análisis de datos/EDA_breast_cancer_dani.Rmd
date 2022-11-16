@@ -86,8 +86,9 @@ Lo primero importamos ciertas librerias que nos pueden ser utiles:
 ```{r}
 library(dplyr)
 library(ggplot2)
-library(car)
 library(ggcorrplot)
+library(fBasics)
+library(tidyr)
 ```
 Definimos algunas funciones que nos van a ser utiles:
 ```{r}
@@ -188,11 +189,28 @@ ggplot(Breast_Cancer, aes(x = get(x))) +
   geom_histogram(fill="white", colour="black",bins=10) +
   ggtitle(x)
 ```
-Lo vemos por la variable categorica Race
+
+Analizamos si la variable Edad sigue una normal:
+```{r}
+normalTest(Breast_Cancer$Age, method = c("sw", "jb"))
+qqnorm(Breast_Cancer$Age, pch = 1, frame = FALSE)
+qqline(Breast_Cancer$Age, col = "steelblue", lwd = 2)
+```
+Se observa que no tiene mucha normalidad. Probamos con el logaritmo:
+Analizamos si la variable Edad sigue una normal:
+```{r}
+normalTest(log10(Breast_Cancer$Age), method = c("sw", "jb"))
+qqnorm(log10(Breast_Cancer$Age), pch = 1, frame = FALSE)
+qqline(log10(Breast_Cancer$Age), col = "steelblue", lwd = 2)
+```
+Se sigue observando que no tiene normalidad la variable.
+
+Lo vemos por la variable categórica Race
 ```{r}
 y<-colnames(Breast_Cancer.cat)[1]
 lables <-levels(Breast_Cancer[,y])
 names(Breast_Cancer.cat[1]) 
+total<-length(Breast_Cancer[,x])
 
 Breast_Cancer %>%
   mutate(Race = factor(get(y) , labels = levels(Breast_Cancer[,y]))) %>%
@@ -205,12 +223,22 @@ Breast_Cancer %>%
   ggplot(aes(x = get(y), y = get(x))) +
   geom_violin(aes(fill = Race)) +
   ggtitle(x)
+
+Breast_Cancer %>%
+   summarise(conteo=length(get(x)),porc=length(get(x))/total,media=mean(get(x)),median=median(get(x)),desv_tip=sd(get(x)),CoV=Cv(mean(get(x)),sd(get(x))))
+
+Breast_Cancer %>%
+   group_by(Race) %>%
+   summarise(conteo=length(get(x)),porc=length(get(x))/total,media=mean(get(x)),median=median(get(x)),desv_tip=sd(get(x)),CoV=Cv(mean(get(x)),sd(get(x))))
 ```
+Se observa que las mujeres de raza blanca son más mayores y están algo más menos dispersos. Sin embargo, las mujeres de la muestra de raza negra y sobre todo de "Other" son más jóvenes. En cualquier caso, las mujeres de raza blanca son la clara mayoria.
+
 Lo vemos por la variable categorica Marital Status
 ```{r}
 y<-colnames(Breast_Cancer.cat)[2]
 y
 lables <-levels(Breast_Cancer[,y])
+total<-length(Breast_Cancer[,x])
 
 Breast_Cancer %>%
   mutate(Marital.Status = factor(get(y) , labels = levels(Breast_Cancer[,y]))) %>%
@@ -223,10 +251,17 @@ Breast_Cancer %>%
   ggplot(aes(x = get(y), y = get(x))) +
   geom_violin(aes(fill = Marital.Status)) +
   ggtitle(x)
+
+Breast_Cancer %>%
+   summarise(conteo=length(get(x)),porc=length(get(x))/total,media=mean(get(x)),median=median(get(x)),desv_tip=sd(get(x)),CoV=Cv(mean(get(x)),sd(get(x))))
+
+Breast_Cancer %>%
+   group_by(Marital.Status) %>%
+   summarise(conteo=length(get(x)),porc=length(get(x))/total,media=mean(get(x)),median=median(get(x)),desv_tip=sd(get(x)),CoV=Cv(mean(get(x)),sd(get(x))))
 ```
 Lo vemos por la variable categorica Marital Status
 ```{r}
-y<-colnames(Breast_Cancer.cat)[2]
+y<-colnames(Breast_Cancer.cat)[3]
 y
 lables <-levels(Breast_Cancer[,y])
 
