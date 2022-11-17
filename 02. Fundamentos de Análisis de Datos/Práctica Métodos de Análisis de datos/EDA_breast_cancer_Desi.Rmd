@@ -5,6 +5,12 @@ date: "11/11/2022"
 output: html_document
 ---
 
+Para aprender a leer los datos:
+
+```{r setup, include=FALSE}
+datos <- read.csv("Breast_Cancer.csv")
+```
+
 Cuando queremos decirle a R que nos de un factor tenemos que hacer lo siguiente:
 ```{r setup, include=FALSE}
 datos$Status <- factor(datos$Status)
@@ -52,7 +58,6 @@ datos$Progesterone.Status <- factor(datos$Progesterone.Status)
 
 Para aprender a leer los datos:
 ```{r setup, include=FALSE}
-datos <- read.csv("Breast_Cancer.csv")
 head(datos)
 ```
 
@@ -64,3 +69,67 @@ str(datos)
 summary(datos)
 ```
 
+###Sumario individual de cada variable
+```{r}
+summary(datos$Age)
+```
+
+```{r}
+summary(datos$Race)
+```
+
+```{r}
+summary(datos$Marital.Status)
+```
+
+```{r}
+summary(datos$T.Stage)
+```
+
+```{r}
+summary(datos$N.Stage)
+```
+
+```{r}
+summary(datos$X6th.Stage)
+```
+
+```{r}
+summary(datos$differentiate)
+```
+
+```{r}
+summary(datos$Grade)
+```
+
+```{r}
+summary(datos$A.Stage)
+```
+
+```{r}
+summary(datos$Tumor.Size)
+```
+
+```{r}
+summary(datos$Estrogen.Status)
+```
+
+```{r}
+summary(datos$Progesterone.Status)
+```
+
+```{r}
+summary(datos$Regional.Node.Examined)
+```
+
+```{r}
+summary(datos$Reginol.Node.Positive)
+```
+
+```{r}
+summary(datos$Survival.Months)
+```
+
+```{r}
+summary(datos$Status)
+```
