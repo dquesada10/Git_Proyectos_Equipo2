@@ -1,0 +1,220 @@
+----------------------------Ejemplo 1---------------------------------------------------
+<rdf:RDF
+	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	xmlns:foaf="http://xmlns.com/foaf/0.1/"
+>
+
+<rdf:Description rdf:about="http://www.vortic3.com/members#Desiderio">
+	<foaf:name>Desiderio Nevado López </foaf:name>
+	<foaf:nick>Desiderio</foaf:nick>
+	<foaf:knows>Daniel</foaf:knows>
+	<foaf:member rdf:resource="https://www.urjc.es/component/k2/1332-data-science" />
+</rdf:Description>
+</rdf:RDF>
+
+----------------------------------------------------------------------------------------
+------------------------------Ejemplo 2-------------------------------------------------
+<?xml version ="1.0"?>
+<rdf:RDF
+	xmlns:rdf = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	xmlns:person = "http://www.ontologies.org/member#"
+	xmlns:base = "http://www.vortic3.com/member"
+>
+
+	<rdf:Description rdf:about = "Carlos"/>
+	<rdf:Description rdf:about = "Paloma"/>
+		<person:hasColleague rdf:resource = "Carlos"/>
+		<person:hasWebPage> http://www.vertic3.com </person:hasWebPage>
+	</rdf:Description>
+</rdf:RDF>
+
+----------------------------------------------------------------------------------------
+------------------------------Ejemplo 3-------------------------------------------------
+<?xml version="1.0"?>
+
+<rdf:RDF
+	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax- ns#" 
+	xmlns:vx="http://www.vortic3.com">
+
+<rdf:Description rdf:about="http://www.vortic3.com/miembros">
+	<vx:professor>
+		<rdf:Bag>
+			<rdf:_1>Carlos Cuesta</rdf:_1>
+			<rdf:_2>Almudena Sierra</rdf:_2>
+			<rdf:_3>Belen Vela</rdf:_3>
+			<rdf:_4>Jose Maria Cavero</rdf:_4>
+		</rdf:Bag>
+	</vx:professor>
+</rdf:Description>
+</rdf:RDF>
+
+----------------------------------------------------------------------------------------
+------------------------------Ejemplo 4-------------------------------------------------
+<?xml version="1.0"?>
+
+<rdf:RDF
+	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax- ns#"
+	xmlns:vx="http://www.vortic3.com">
+
+<rdf:Description rdf:about="http://www.vortic3.com/miembros">
+		<vx:professor>
+			<rdf:Seq>
+				<rdf:_1>Carlos Cuesta</rdf:_1>
+				<rdf:_2>Almudena Sierra</rdf:_2>
+				<rdf:_3>Belen Vela</rdf:_3>
+				<rdf:_4>Jose Maria Cavero</rdf:_4>
+			</rdf:Seq>
+		</vx:professor>
+</rdf:Description
+</rdf:RDF>
+
+----------------------------------------------------------------------------------------
+------------------------------Ejemplo 5-------------------------------------------------
+<?xml version="1.0"?>
+
+<rdf:RDF
+	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	xmlns:mao="http://com.vortic3.MANTO#"
+	xmlns:sch="https://schema.org/">
+
+<rdf:Description rdf:about="http://com.vortic3.MANTO#est_4_11">
+	<rdf:type rdf:resource="http://com.vortic3.MANTO#stopPlace"/>
+	<sch:name>GRAN VIA</sch:name>
+	<mao:connectionLink rdf:nodeID="N2a46376ccca342efa1befd7250cf37d5"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="N2a46376ccca342efa1befd7250cf37d5">
+	<rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag"/>
+	<rdf:_1>metro05</rdf:_1>
+	<rdf:_2>metro01</rdf:_2>
+</rdf:Description>
+</rdf:RDF>>
+----------------------------------------------------------------------------------------
+------------------------------Ejemplo 6-------------------------------------------------
+<?xml version="1.0" encoding="UTF-8"?>
+
+<rdf:RDF
+	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	xmlns:sch="https://schema.org/">
+
+<rdf:Description rdf:about="http://com.vortic3.MANTO#par_4_14_quay02">
+	<sch:name>
+		<rdf:XMLLiteral>
+			<rdf:value>ANTON MARTIN</rdf:value>
+		</rdf:XMLLiteral>
+	</sch:name>
+</rdf:Description>
+</rdf:RDF>
+
+----------------------------------------------------------------------------------------
+------------------------------Ejemplo 7-------------------------------------------------
+<?xml version="1.0"?>
+
+<rdf:RDF
+	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	xmlns:xsd="http://www.w3.org/2000/10/XMLSchema#"
+	xmlns:foaf="http://xmlns.com/foaf/0.1/"
+	xmlns:people="http://www.vortic3.com/Properties#">
+
+<rdf:Description rdf:about="http://com.vortic3.MANTO/members#Paloma">
+	<foaf:name>
+		<rdf:XMLLiteral>
+			<rdf:value>Paloma Cáceres García de Marina</rdf:value>
+		</rdf:XMLLiteral>
+	</foaf:name>
+
+	<people:wasBorn>
+		<xsd:date>
+			<rdf:value>26 December 1970</rdf:value>
+		</xsd:date>
+	</people:wasBorn>
+</rdf:Description>
+</rdf:RDF>
+
+----------------------------------------------------------------------------------------
+------------------------------Ejemplo 8-------------------------------------------------
+<?xml version="1.0"?>
+
+<rdf:RDF 
+	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	xmlns:dbo="http://dbpedia.org/ontology/" 		xmlns:dbp="http://dbpedia.org/property/"
+	xmlns:dbr="http://dbpedia.org/page/" 		xmlns:foaf="http://xmlns.com/foaf/0.1/"
+	xmlns:owl="http://www.w3.org/2002/02/owl/#" 	xmlns:film="http://data.linkedmdb.org/resource/film/"
+	xml:base="http://dbpedia.org/page/">
+
+<rdf:Description rdf:about="Clint_eastwood">
+	<foaf:name>
+		<rdf:Bag>
+			<rdf:li>Clint Eastwood</rdf:li>
+			<rdf:li>Eastwood, Clint</rdf:li>
+		</rdf:Bag>
+	</foaf:name>
+
+	<dbp:director rdf:resource="Mystic River" />
+	<dbp:director rdf:resource="Million_Dollar_Baby" />
+	<dbp:director rdf:resource="Gran Torino" />
+	<dbp:birthplace rdf:resource="California" />
+</rdf:Description>
+
+<rdf:Description rdf:about="Million_Dollar_Baby">
+	<owl:sameAs rdf:resource="http://data.linkedmdb.org/resource/film/942" />
+</rdf:Description>
+</rdf:RDF>
+
+----------------------------------------------------------------------------------------
+------------------------------Ejemplo 9-------------------------------------------------
+<?xml version="1.0"?>
+<!DOCTYPE rdf:RDF [
+<!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+<!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+<!ENTITY person "http://www.vortic3.com/ontologies/person#" >
+]>
+<rdf:RDF xmlns="http://www. vortic3.com/ontologies/person#"
+	xml:base="http://www. vortic3.com/ontologies/person"
+	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+	xmlns:person="http://www. vortic3.com/ontologies/person#">
+
+<rdfs:Property rdf:about="&person;hasColleague">
+	<rdfs:range rdf:resource="#Person"/>
+	<rdfs:domain rdf:resource="#Person"/>
+</rdfs:Property>
+
+<rdfs:Property rdf:about="&person;hasHomePage">
+	<rdfs:domain rdf:resource="#FullProfessor"/>
+</rdfs:Property>
+
+<rdfs:Property rdf:about="&person;hasName">
+	<rdfs:domain rdf:resource="#Person"/>
+	<rdfs:range rdf:resource="&rdfs;Literal"/>
+</rdfs:Property>
+
+<rdfs:Class rdf:about="#AssociateProfessor">
+	<rdfs:subClassOf rdf:resource="#Professor"/>
+</rdfs:Class>
+
+<rdfs:Class rdf:about="#FullProfessor">
+	<rdfs:subClassOf rdf:resource="#Professor"/>
+</rdfs:Class>
+
+<rdfs:Class rdf:about="#InterimAssociateProfessor">
+	<rdfs:subClassOf rdf:resource="#AssociateProfessor"/>
+</rdfs:Class>
+
+<rdfs:Class rdf:about="#Person"/>
+<rdfs:Class rdf:about="#Professor">
+	<rdfs:subClassOf rdf:resource="#Person"/>
+</rdfs:Class>
+
+<FullProfessor rdf:about="#Paloma">
+	<person:hasHomePage>http://www.fi.upm.es</person:hasHomePage>
+	<person:hasColleague rdf:resource="#Carlos"/>
+</FullProfessor>
+
+<AssociateProfessor rdf:about="#Almudena">
+	<person:hasName>Almudena Sierra Alonso</person:hasName>
+	<person:hasColleague rdf:resource="#Paloma"/>
+</AssociateProfessor>
+
+<InterimAssociateProfessor rdf:about="#Carlos"/>
+</rdf:RDF>
