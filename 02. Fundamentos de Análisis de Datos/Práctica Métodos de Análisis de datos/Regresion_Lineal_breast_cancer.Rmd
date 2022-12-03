@@ -1,0 +1,102 @@
+---
+title: "Regresion Lineal del Dataset del Cancer de Mama"
+author: "Autores: Laura Martín, Desiderio Nevado y Daniel Quesada"
+date: "Fecha de la publicación: `r Sys.Date()`"
+output: html_document
+---
+
+
+
+
+#Análisis
+
+Lo primero importamos ciertas librerias que nos pueden ser utiles:
+```{r}
+library(dplyr)
+library(ggplot2)
+library(ggcorrplot)
+library(fBasics)
+library(tidyr)
+```
+```{r}
+Breast_Cancer<- read.csv('Breast_Cancer.csv')
+head(Breast_Cancer)
+```
+
+```{r}
+str(Breast_Cancer)
+```
+Como se observar de las 16 variables del dataset hay 5 variables integer y el resto son categóricas pero las ha importado como caracter. Además, se puede observar que la variable Reginol.Node.Positive está mal escrita así que vamos a renombrarla.
+
+```{r}
+Breast_Cancer<-rename(Breast_Cancer,Regional.Node.Positive=Reginol.Node.Positive)
+str(Breast_Cancer)
+```
+Ahora vamos a convertir las varibles chr en factores:
+```{r}
+Breast_Cancer[sapply(Breast_Cancer, is.character)] <- lapply(Breast_Cancer[sapply(Breast_Cancer, is.character)],as.factor)
+str(Breast_Cancer)
+```
+Con las variables bien categorizadas como factores podemos ver su distribución:
+```{r}
+summary(Breast_Cancer)
+```
+
+```{r}
+  model <- lm(Tumor.Size ~ Survival.Months + T.Stage, data = Breast_Cancer)
+summary(model)
+```
+```{r}
+head(conce)
+library(ggfortify)
+residuals=model$residuals
+autoplot(model)
+```
+
+```{r}
+ggplot(Breast_Cancer, aes(x = Grade)) +
+  geom_bar() 
+```
+```{r}
+Breast_Cancer_mod <-Breast_Cancer %>%
+mutate(grade1 = ifelse(Breast_Cancer$Grade ==1, 1, 0))  %>%
+mutate(stageIIB = ifelse(Breast_Cancer$X6th.Stage =="IIB", 1, 0)) 
+head(Breast_Cancer_mod)
+```
+
+
+```{r}
+library(leaps)
+model2 <- leaps::regsubsets(Tumor.Size~., Breast_Cancer, method="forward")
+for (metric in c("r2", "adjr2", "Cp", "bic")){plot(model2, scale=metric)}
+```
+
+
+```{r}
+model2 <- lm(Tumor.Size ~ Survival.Months + T.Stage+grade1+stageIIB, data = Breast_Cancer_mod)
+summary(model2)
+```
+
+```{r}
+model3 <- lm(Tumor.Size ~ Survival.Months + T.Stage+stageIIB, data = Breast_Cancer_mod)
+summary(model3)
+```
+
+```{r}
+residuals=model3$residuals
+autoplot(model3)
+```
+
+
+```{r}
+# install.packages("AppliedPredictiveModeling")
+library(AppliedPredictiveModeling)
+# Llamamos a los datos
+data(concrete)
+# Mostramos datos
+head(concrete)
+```
+
+
+
+
