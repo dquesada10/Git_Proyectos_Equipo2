@@ -1,16 +1,16 @@
 ---
-title: "Regresion Lineal del Dataset del Cancer de Mama"
+title: "Regresion Lineal del Dataset Airquality"
 author: "Autores: Laura Martín, Desiderio Nevado y Daniel Quesada"
 date: "Fecha de la publicación: `r Sys.Date()`"
 output: html_document
 ---
 
 
-
+*Como nuestros datos son de clasificación, decidimos usar los datos que ya existen en R de Airquality para realizar el apartado de regresión lineal. Se ha intentado hacer usando datos del dataset de Breast Cancer, pero no tenía mucho sentido*
 
 #Análisis
 
-Lo primero importamos ciertas librerias que nos pueden ser utiles:
+Lo primero importamos las librerias:
 ```{r}
 library(dplyr)
 library(ggplot2)
@@ -18,9 +18,73 @@ library(ggcorrplot)
 library(fBasics)
 library(tidyr)
 ```
+
+Visualizamos los datos del dataset
+
 ```{r}
-Breast_Cancer<- read.csv('Breast_Cancer.csv')
-head(Breast_Cancer)
+
+head(airquality)
+summary(airquality)
+
+```
+# EDA y tratamiento de datos
+Como ya se han realizado los pasos de análisis para Breast Cancer en este caso lo haremos de manera rápida. Nos centramos directamente en el tratamiento de datos faltantes.
+
+Realizamos un tratamiento de datos faltantes en las variables Ozono y Radiación Solar:
+Hemos decidido inputar la media del mes en los datos nulos:
+
+```{r , echo=FALSE }
+airquality$Solar.R[is.na(airquality$Solar.R)] <- 0 
+airquality$Ozone[is.na(airquality$Ozone)] <- 0 
+
+airquality_means <- airquality %>% select(Ozone, Solar.R, Wind, Temp, Month) %>% filter(Ozone != 0, Solar.R != 0)  %>% group_by( Month) %>% summarise(Ozone=round(mean(Ozone),0),Solar.R=round(mean(Solar.R),0),Wind=round(mean(Wind),0),Temp=round(mean(Temp),0))
+
+airquality_means
+
+```
+```{r}
+airquality_2 <- airquality %>% mutate(Ozone = 
+ifelse(airquality$Ozone == 0 & airquality$Month == 5, 
+       as.numeric(airquality_means %>% select(Ozone) %>% filter(airquality_means$Month == 5)),
+      ifelse(airquality$Ozone == 0 & airquality$Month == 6,  
+             as.numeric(airquality_means %>% select(Ozone) %>% filter(airquality_means$Month == 6)),
+             ifelse(airquality$Ozone == 0 & airquality$Month == 7, 
+                    as.numeric(airquality_means %>% select(Ozone) %>% filter(airquality_means$Month == 7)),
+                    ifelse(airquality$Ozone == 0 & airquality$Month == 8,  
+                           as.numeric(airquality_means %>% select(Ozone) %>% filter(airquality_means$Month == 8)),
+                           ifelse(airquality$Ozone == 0 & airquality$Month == 9,  
+                                  as.numeric(airquality_means %>% select(Ozone) %>% filter(airquality_means$Month == 9)),airquality$Ozone))))))
+
+
+airquality_3 <- airquality_2 %>% mutate(Solar.R = 
+ifelse(airquality$Solar.R == 0 & airquality$Month == 5, 
+       as.numeric(airquality_means %>% select(Solar.R) %>% filter(airquality_means$Month == 5)),
+      ifelse(airquality$Solar.R == 0 & airquality$Month == 6,  
+             as.numeric(airquality_means %>% select(Solar.R) %>% filter(airquality_means$Month == 6)),
+             ifelse(airquality$Solar.R == 0 & airquality$Month == 7, 
+                    as.numeric(airquality_means %>% select(Solar.R) %>% filter(airquality_means$Month == 7)),
+                    ifelse(airquality$Solar.R == 0 & airquality$Month == 8,  
+                           as.numeric(airquality_means %>% select(Solar.R) %>% filter(airquality_means$Month == 8)),
+                           ifelse(airquality$Solar.R == 0 & airquality$Month == 9,  
+                                  as.numeric(airquality_means %>% select(Solar.R) %>% filter(airquality_means$Month == 9)),airquality$Solar.R))))))
+
+airquality_3 
+
+
+```
+
+```{r , echo=FALSE }
+head(airquality_3)
+summary(airquality_3)
+```
+
+Transformo la tabla: quitamos los datos con valor 0 para que no afecten a la media mensual, y saco una tabla de los parámetros de calidad del aire medios para los diferentes meses
+
+```{r , echo=FALSE }
+airquality_means <- airquality %>% select(Ozone, Solar.R, Wind, Temp, Month) %>% filter(Ozone != 0, Solar.R != 0)  %>% group_by( Month) %>% summarise(Ozone=mean(Ozone),Solar.R=mean(Solar.R),Wind=mean(Wind),Temp=mean(Temp))
+airquality_means
+```{r}
+str(Breast_Cancer)
 ```
 
 ```{r}
