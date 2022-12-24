@@ -102,7 +102,7 @@ A futuro construir un modelo de clasificación para predecir si la paciente sobr
 
 ## Análisis
 
-Lo primero importamos las librerias que vamos a utilizar en el informe de markdown así como la version de R que estamos utilizando:
+Lo primero, importamos las librerías que vamos a utilizar en el informe de markdown, así como la version de R que estamos utilizando:
 ```{r, message = FALSE,warning = FALSE}
 library(dplyr)
 library(ggplot2)
@@ -126,9 +126,10 @@ library(MASS)
 version$version.string
 ```
 
-Damos un primer vistazo a la forma del dataset mirando los primeros registros:
+Miramos los primeros registros del dataset:
 ```{r}
 Breast_Cancer <- read_excel("Breast_Cancer.xlsx")
+Breast_Cancer.head(10)
 ```
 
 Por otro lado, la estructura de las variables sería la siguiente:
@@ -136,7 +137,7 @@ Por otro lado, la estructura de las variables sería la siguiente:
 ```{r}
 str(Breast_Cancer)
 ```
-Como se observar que se trata de `r nrow(Breast_Cancer)` observaciones y de las `r ncol(Breast_Cancer)` variables del dataset hay `r sum(sapply(Breast_Cancer, is.integer))` variables integer y el resto son categóricas pero las ha importado como caracter. Además, se puede observar que la variable Reginol.Node.Positive está mal escrita así que vamos a renombrarla.
+Como se puede observar que se trata de `r nrow(Breast_Cancer)` observaciones y de las `r ncol(Breast_Cancer)` variables del dataset hay `r sum(sapply(Breast_Cancer, is.integer))` variables integer y el resto son categóricas, pero las ha importado como caracter. Además, se puede observar que la variable Reginol.Node.Positive está mal escrita así que la renombramos.
 
 ```{r}
 Breast_Cancer<-rename(Breast_Cancer,Regional_Node_Positive=Reginol_Node_Positive)
@@ -155,18 +156,18 @@ summary(Breast_Cancer)
 A simple vista se puede observar lo siguiente:
 
 * La edad media es de 54 años y casi todas están entre 50 y 60 años
-* Son mujeres casada en su mayoria
-* De media han sobrevivido 6 años y la mayoria están vivas
-* El grado del cancer en general es 2 o 3 pero la mayoria esta en unos estados más iniciales y a apenas se les ha extendido por partes distantes del cuerpo 
+* Son mujeres casadas en su mayoría
+* De media han sobrevivido 6 años y la mayoría están vivas
+* El grado del cancer en general es 2 o 3. La mayoría están en estados iniciales y apenas se han extendido por partes distantes del cuerpo
 
 ### Tratamiento datos faltantes
-Viendo desde el summary, se observa que hay 19 N/As en algunas variables.
+En el summary del dataset se observa que hay 19 N/As en algunas variables.
 
 ```{r}
 sapply(Breast_Cancer, function(x) sum(is.na(x)))
 ```
 
-Vemos que en alguna algunas variables hay N/A pero son muy pocas. De hecho, suponen un 0.47% del total de los datos. Además, de estos registros no tenemos la variable respuesta (Status) con lo que optamos por eliminarlas.
+Como los registros con valores N/A en ciertas variables son pocos (un 0.47% del total de los datos) y, además, para estos registros no tenemos la variable respuesta (Status), optamos por eliminarlos.
 
 ```{r}
 Breast_Cancer_limpio<-Breast_Cancer %>% filter(is.na(Regional_Node_Positive)==FALSE)
@@ -180,7 +181,7 @@ summary(Breast_Cancer_limpio)
 
 
 ### Partición de dataset en train y test
-Antes de empezar con el EDA, siguiendo las buenas prácticas en la construcción de modelos, particionamos el dataset desde el principio entre uno de entrenamiento que es con el que vamos a hacer el EDA y otro de validación para que cuando tengamos el modelo ver si este predice bien sobre unos datos que no ha visto.
+Antes de empezar con el EDA, siguiendo las buenas prácticas en la construcción de modelos, particionamos el dataset desde el principio entre uno de entrenamiento, que es con el que vamos a hacer el EDA, y otro de validación. De esta forma, cuando tengamos el modelo, podremos ver si este predice bien sobre unos datos que no ha visto.
 
 Para ello utilizamos la funcion de la libreria Caret.
 
@@ -198,9 +199,9 @@ Breast_Cancer_test <- Breast_Cancer_limpio[-particion, ]
 
 ### Transformación de las variables
 
-De las existentes existen 2 que se podrían crear a partir de las anteriores y podrían ser relevantes para analizar:
+Partiendo de las variables del dataset, creamos 2 nuevas variables que podrían ser relevantes para analizar:
 
-* Final_Age: supone calcular a traves de la edad cual sería la edad del paciente despues de los meses que ha sobrevivido. Lo podríamos expresar de la siguiente manera:
+* Final_Age: supone calcular a traves de la edad cual sería la edad del paciente después de los meses que ha sobrevivido. Lo podríamos expresar de la siguiente manera:
 <center> $redondear(Age + Survival Months/12)$ </center>
 * Porc_Reg_N_Pos: supone dividir el número de nodos linfáticos positivos entre el total de examinados. Lo podríamos expresar de la siguiente manera:
 <center> $Regional Node Positive / Regional Node Examined$ </center>
@@ -227,7 +228,7 @@ colnames(Breast_Cancer_train_cat)
 ncol(Breast_Cancer_train_num)
 ncol(Breast_Cancer_train_cat)
 ```
-Miramos a alto nivel como se reparte la variable respuesta en el dataset de Train:
+Observamos a alto nivel como se reparte la variable respuesta en el dataset de Train:
 ```{r message = FALSE,warning = FALSE,fig.width=4,fig.height=4}
 resumen_status<-data.frame(prop.table(table(Breast_Cancer_train$Status)))
 names(resumen_status) <- c("Status", "Freq")
@@ -239,13 +240,13 @@ ggplot(resumen_status, aes(x="", y=Freq, fill=Status)) +
   scale_fill_manual(values = c("Alive"="#009999", "Dead"="#cb2e45"))
 ```
 
-Como se puede observar la mayoria de la muestra sobrevive siendo un  85%.
+Como se puede observar la mayoria de la muestra sobrevive, suponiendo un  85%.
 
 
 
 ### Analisis Univariante:  variables numéricas
 
-Primero generamos un boxplot para las variables para entender un poco mejor como se distribuyen:
+Primero generamos un boxplot de las variables para entender un poco mejor como se distribuyen:
 
 ```{r fig.width=14,fig.height=5.5}
 par(cex.axis = 0.8)
@@ -253,7 +254,7 @@ boxplot(Breast_Cancer_train_num, main = 'Boxplot de Variables Continuas',
         ylab = "Valores",col = "#009999")
 ```
 
-Como cada una esta a una escala a veces muy diferente sacamos los logaritmos de todas ellas para ver cuales tienen mas dispersion y que puedan estar en la misma escala:
+Como cada una tiene una escala, a veces muy diferente, sacamos los logaritmos de todas ellas para ver cuales tienen mas dispersión y que puedan estar en la misma escala:
 
 ```{r fig.width=13,fig.height=5.5}
 Breast_Cancer_train_num_log <- lapply(Breast_Cancer_train_num, log10)
@@ -263,12 +264,12 @@ boxplot(Breast_Cancer_train_num_log, main = 'Boxplot de Variables Continuas',
 ```
 Se puede observar lo siguiente:
 
-* Tanto la variable de nodos linfaticos positivos como su transformada del porcentaje de positivos tiene más dispersión que el resto
-* La variable survival months no tiene mucha dispersión pero luego tiene muchos datos atípicos.
+* Tanto la variable de nodos linfáticos positivos como su transformada del porcentaje de positivos tienen más dispersión que el resto
+* La variable survival months no tiene mucha dispersión pero tiene muchos datos atípicos.
 * Tumor size no tiene mucha dispersión pero también tiene varios datos atípicos por arriba.
 
 
-Si ahora nos centamos en ver como se distribuyen sus valores en histogramas vemos lo siguiente:
+Si ahora nos centramos en ver como se distribuyen sus valores en histogramas vemos lo siguiente:
 
 ```{r warnning=FALSE,fig.width=20,fig.height=10}
 vars<-c(strsplit(colnames(Breast_Cancer_train_num), ","))
@@ -285,13 +286,13 @@ plots <- lapply(vars, function(x) {
 grid.arrange(grobs = plots, nrow = 3, ncol = 3)
 ```
 
-Aqui se puede obsevar como las variables tumor size y survival months tienen colas largas (la primera a la derecha y la segunda a la izquierda) como ya se intuia en el boxplot. 
+Aquí se puede obsevar como las variables tumor size y survival months tienen colas largas (la primera a la derecha y la segunda a la izquierda) como ya se intuía en el boxplot. 
 
-En general se trata de mujeres en torno a los 50 años que con tamaños no muy grandes de tumores y que han sobrevivido muchos años.
+En general se trata de mujeres en torno a los 50 años con tamaños no muy grandes de tumores y que han sobrevivido muchos años.
 
-Por otro lado, se ve como los nodos linfaticos positivos siguen como una exponencial.
+Por otro lado, se ve como los nodos linfáticos positivos siguen aproximadamente una exponencial.
 
-Ahora, podemos analizar la correlacion entre estas variables pero antes vamos a incluir la variable Status de forma numerica:
+Ahora, podemos analizar la correlación entre estas variables, pero antes vamos a incluir la variable Status de forma numérica:
 
 ```{r warnning=FALSE}
 Breast_Cancer_train_num_2 <- Breast_Cancer_train_num %>% mutate(Status = ifelse(Breast_Cancer_train$Status == "Alive", 0, 1))
@@ -306,7 +307,7 @@ De la matriz de correlaciones lo que se puede resaltar es:
 
 * Que los meses sobrevividos tiene una correlacion inversa lineal con si la mujer fallece por el cancer lo cual tiene mucho sentido.
 * También se observa cierta correlación que cuando una mujer tiene detectados más nodos linfáticos positivos más probabilidad tiene de fallecer.
-* La siguiente variable con algo de correlacion lineal con los fallecidos es el tamaño del tumor pero ya desde más lejos.
+* La siguiente variable con algo de correlación lineal con los fallecidos es el tamaño del tumor pero ya desde más lejos.
 
 Ahora vamos a visualizar estas variables númericas como se relacionan entre ellas con scatterplots pero segregando entre los que sobreviven y los que no.
 
@@ -325,7 +326,7 @@ for(i in 1:p$nrow) {
 p
 ```
 
-De forma clara unicamente se observa como a menores meses de supervivencia hay mas fallecidas.
+De forma clara únicamente se observa como a menores meses de supervivencia hay mas fallecidas.
 
 
 ### Analisis Univariante: variables categóricas
@@ -351,24 +352,24 @@ Breast_Cancer_train %>%
 
 grid.arrange(grobs = plots, nrow = 5, ncol = 2)
 ```
-De estos graficos sobre las variables categóricas, las principales conclusiones es la muestra es principalmente:
+De estos graficos sobre las variables categóricas, las conclusiones en la muestra son principalmente:
 
-* mujeres blancas (que se mueren menos que las negras), 
+* Mujeres blancas (que se mueren menos que las negras)
 
-* de mujeres casadas (que se mueren menos que el resto de grupos - las que mas se mueren son separadas pero no hay muestra suficiente)
+* Mujeres casadas (que se mueren menos que el resto de grupos - las que mas se mueren son separadas pero no hay muestra suficiente)
 ```{r}
 round(apply(table(Breast_Cancer_train$Status, Breast_Cancer_train$Marital_Status), 2, prop.table) * 100, 2)
 ```
-* tienen canceres los niveles bajos (1 y 2) del T Stage y sobre todo en N Stage (nivel 1)
+* Tienen canceres los niveles bajos (1 y 2) del T Stage y sobre todo en N Stage (nivel 1)
 
-* Lo mismo ocurre con el 6th Stage, que están en los niveles bajos asi como con la diferenciación de las celulas cancerigenas, la cual todavia es moderada.
+* Lo mismo ocurre con el 6th Stage, que está en los niveles bajos. Así como, con la diferenciación de las células cancerígenas, la cual todavía es moderada.
 
-* El grado del cancer es todavia generalmente nivel 2 y A Stage es mayoritariamente Regional.
+* El grado del cancer es todavía generalmente nivel 2 y A Stage es mayoritariamente Regional.
 
-* Respecto a los niveles de estrogenos y progesterones son mayoritariamente positivos que son tienen menos proporcion de fallecidos.
+* Los niveles de estrógenos y progesterones son mayoritariamente positivos, pero fallecen menos.
 
 
-Viendo esto, vamos a volver a observar las variables pero de otra manera para ver como de significativas son para determinar la probabilidad de fallecimiento:
+Viendo esto, vamos a volver a observar las variables, pero de otra manera para ver cómo de significativas son para determinar la probabilidad de fallecimiento:
 
 ```{r warnning=FALSE,message=FALSE,fig.width=15,fig.height=20}
 ult_col <- tail(colnames(Breast_Cancer_train_cat), n = 1)
@@ -408,7 +409,7 @@ Resaltan las claras tendencias de todas menos de raza y marital estatus.
 
 ### Analisis Multivariante:  Numericas con Categóricas
 
-Para cerrar el análisis de las variables categóricas vamos a cruzarlas con las numéricas de Survival_Months, Regional_Node_Positive, Porc_Reg_N_Pos y Tumor_Size que son han salido con cierta correlacion y de las categoricas vamos a excluir del analisis la raza y el marital status que no se ha visto que tuvieran mucha relevancia con respecto a los fallecimientos.
+Para cerrar el análisis de las variables categóricas, vamos a cruzarlas con las numéricas. Para ello, de las variables numéricas, elegimos Survival_Months, Regional_Node_Positive, Porc_Reg_N_Pos y Tumor_Size (que son las que han salido con cierta correlacion). De las categóricas, vamos a excluir la raza y el marital status que no se ha visto que tuvieran mucha relevancia con respecto a los fallecimientos.
 
 
 ```{r warnning=FALSE,message=FALSE,fig.width=15,fig.height=8}
@@ -446,7 +447,7 @@ grid.arrange(grobs = plots, nrow = 2, ncol = 2)
 
 Las conclusiones de mirar el T Stage es que a mayor nivel de este:
 
-* mayor es el porcentaje de nodos linfaticos positivos encontrados. Esto es interesante porque con la variable numero de nodos positivo no se ve tan claro
+* Mayor es el porcentaje de nodos linfaticos positivos encontrados. Esto es interesante porque con la variable número de nodos positivos no se ve tan claro
 
 * En general salvo para el nivel T4, mayor tamaño del tumor - esta se hubiera esperado que fuera mas clara porque el T Stage es una variable directamente ligada con el tamaño del tumor principal
 
@@ -482,7 +483,7 @@ plots <- lapply(vars2, function(y) {
 
 grid.arrange(grobs = plots, nrow = 2, ncol = 2)
 ```
-Se observa que el N Stage como se esperaba esta muy ligado al numero o proporcion de nodos positivos encontrados. Es interesante que el N Stage parece no tener nada que ver con numero de meses que se sobrevive.
+Se observa que el N Stage, como se esperaba, esta muy ligado al numero o proporcion de nodos positivos encontrados. Es interesante que el N Stage parece no tener nada que ver con numero de meses que se sobrevive.
 
 ```{r warnning=FALSE,message=FALSE,fig.width=15,fig.height=8}
 ult_col <- tail(colnames(Breast_Cancer_train_cat), n = 1)
@@ -516,7 +517,7 @@ plots <- lapply(vars2, function(y) {
 
 grid.arrange(grobs = plots, nrow = 2, ncol = 2)
 ```
-Respecto al 6th Stage se ve muy claramente que a mayor grado mas proporcion de nodos positivos encontrados, lo cual tiene sentido porque supone que esta mas estendido el tumor.
+Respecto al 6th Stage, se ve muy claramente que a mayor grado mas proporción de nodos positivos encontrados, lo cual tiene sentido porque supone que está mas extendido el tumor.
 
 
 ```{r warnning=FALSE,message=FALSE,fig.width=15,fig.height=8}
@@ -552,7 +553,7 @@ plots <- lapply(vars2, function(y) {
 grid.arrange(grobs = plots, nrow = 2, ncol = 2)
 ```
 
-En esta variable de diferenciacion se ve claramente que su mayor relacion es con el tamaño del tumor. A mayor diferenciacion mayor tamaño del tumor.
+En esta variable de diferenciación se ve claramente que su mayor relación es con el tamaño del tumor. A mayor diferenciación mayor tamaño del tumor.
 
 
 ```{r warnning=FALSE,message=FALSE,fig.width=15,fig.height=8}
@@ -588,7 +589,7 @@ plots <- lapply(vars2, function(y) {
 grid.arrange(grobs = plots, nrow = 2, ncol = 2)
 ```
 
-Al igual que en la variable anterior el grado de cancer muestra una relacion directa con el tamaño del tumor.
+Al igual que en la variable anterior el grado de cáncer muestra una relación directa con el tamaño del tumor.
 
 ```{r warnning=FALSE,message=FALSE,fig.width=15,fig.height=8}
 ult_col <- tail(colnames(Breast_Cancer_train_cat), n = 1)
@@ -623,7 +624,7 @@ plots <- lapply(vars2, function(y) {
 grid.arrange(grobs = plots, nrow = 2, ncol = 2)
 ```
 
-Se observa claramente que cuando el A Stage es distante, es decir, esta muy extendido se tiene un tamaño del tumor mucho mas grande y mucha mas proporcion de nodos positivos.
+Se observa claramente que cuando el A Stage es distante, es decir, está muy extendido, se tiene un tamaño del tumor mucho mas grande y mucha mas proporción de nodos positivos.
 
 ```{r warnning=FALSE,message=FALSE,fig.width=15,fig.height=8}
 ult_col <- tail(colnames(Breast_Cancer_train_cat), n = 1)
@@ -658,7 +659,7 @@ plots <- lapply(vars2, function(y) {
 grid.arrange(grobs = plots, nrow = 2, ncol = 2)
 ```
 
-Si tienes un estado de estrogenos negativo tiendes a tener mas nodos positivos pero tampoco de manera muy significativa.
+Si tienes un estado de estrógenos negativo tiendes a tener mas nodos positivos, pero tampoco de manera muy significativa.
 
 
 ```{r warnning=FALSE,message=FALSE,fig.width=15,fig.height=8}
@@ -693,23 +694,23 @@ plots <- lapply(vars2, function(y) {
 
 grid.arrange(grobs = plots, nrow = 2, ncol = 2)
 ```
-Con el estado de progesterones tambien con los nodos positivos pero también con el tamaño del tumor.
+Con el estado de progesterones también con los nodos positivos, pero también con el tamaño del tumor.
 
 
 ## Modelización
 
 ### Explicación cambio de variable respuesta
 
-Para el objeto de la práctica se pide realizar una regresión lineal multiple es por esto que no tiene sentido continuar con la variable respuesta de nuestra base de datos que es Status (si sobrevive o no) porque sería un modelo de clasificación supervisada.
+Para el objeto de la práctica se pide realizar una regresión lineal multiple por lo que no tiene sentido continuar con la variable respuesta de nuestra base de datos, Status (si sobrevive o no), porque sería un modelo de clasificación supervisada.
 
-Es por esto que para el cumplimiento con la práctica vamos a cambiar de variable respuesta a la variable Tumor_Size que es continua.
+En consecuencia, para el cumplimiento con la práctica, vamos a cambiar de variable respuesta a la variable Tumor_Size que es continua.
 
 
 ### Analisis Preliminar
 
-Para entender como se comportan todas respecto a ella vamos categorizar todas y ver como se comporta la media respecto a estas. Para ello vamos a categorizar todas las variables de train.
+Para entender la relación de todas las variables respecto a la variable respuesta, vamos categorizarlas y ver como se comporta su media respecto a esta en train.
 
-Volvemos a mirar que variables numéricas teniamos:
+Volvemos a mirar que variables numéricas teníamos:
 ```{r }
 colnames(Breast_Cancer_train_num)
 ```
@@ -781,7 +782,7 @@ grid.arrange(grafico_1,grafico_2,grafico_3,grafico_4,grafico_5,grafico_6,grafico
 ```
 
 
-De todas las variable presentadas se podrian sacar las siguientes conclusiones:
+De todas las variable presentadas se podrían sacar las siguientes conclusiones:
 
 * Tienen una tendencia clara lineal positiva: N Stage, T Stage, 6th Stage, Regional Node Positive 
 * Tienen una cierta tendencia lineal positiva: Grade, Status, Percentage Regional Node Positive
@@ -792,20 +793,20 @@ De todas las variable presentadas se podrian sacar las siguientes conclusiones:
 
 ### Seleccion de variables
 
-Vamos a empezar haciendo un modelo de regresión lineal multiple incluyendo todas las variables para ver de un primer vistazo cuales son más significativas para predecir la variable Tumor_Size (nombre del modelo: modelo_inicial1):
+Vamos a empezar haciendo un modelo de regresión lineal multiple incluyendo todas las variables para ver de un primer vistazo cuales son mas significativas para predecir la variable Tumor_Size (nombre del modelo: modelo_inicial1):
 
 ```{r}
 modelo_inicial1 <- lm(Tumor_Size~., data=Breast_Cancer_train_rl)
 summary(modelo_inicial1)
 ```
 
-Se puede observar que la variable T Stage es significativa ya que sus p-valores son < 5% por lo que se rechazaría la hipótesis que el coeficiente sea 0.
+Se puede observar que la variable T Stage es significativa ya que sus p-valores son < 0.05 por lo que se rechazaría la hipótesis que el coeficiente sea 0.
 
-Esto también se observa con la variable 6th_Stage para el nivel IIIA así como para ciertos niveles del numero de nodos positivos.
+Esto también se observa con la variable 6th_Stage para el nivel IIIA así como para ciertos niveles del número de nodos positivos.
 
-El R² ajustado es de un 76% por lo que no está mal el modelo pero incluye muchisimas variables que no son significativas para predecir la variable respuesta y que añaden complejidad al modelo.
+El R² ajustado es de un 76% por lo que no está mal el modelo, pero incluye muchas variables que no son significativas para predecir la variable respuesta y que añaden complejidad al modelo.
 
-Es por esto que hacemos prueba de lanzar el modelo unicamente con las 3 variables que salieron muy significativas (nombre del modelo: modelo_inicial2):
+Es por esto que hacemos la prueba de lanzar el modelo únicamente con las 3 variables que salieron más significativas (nombre del modelo: modelo_inicial2):
 
 ```{r}
 modelo_inicial2 <- lm(Tumor_Size~ T_Stage+`6th_Stage`+Regional_Node_Positive_R, data=Breast_Cancer_train_rl)
@@ -814,18 +815,18 @@ summary(modelo_inicial2)
 
 El modelo vuelve a salir con un R² ajustado muy parecido.
 
-Antes de realizar el procesado de las variables cualitativas, vamos a utilizar una de las técnicas automáticas de selección de variables, en particular vamos a utilizar el metodo forward para analizar las variables que tendria sentido incorporar: 
-```{r warnning=FALSE,message=FALSE,fig.width=17,fig.height=4}
+Antes de realizar el procesado de las variables cualitativas, vamos a utilizar una de las técnicas automáticas de selección de variables, en particular, vamos a utilizar el metodo forward para analizar las variables que tendría sentido incorporar: 
+```{r, warnning=FALSE, message=FALSE, fig.width=17, fig.height=4}
 model <- leaps::regsubsets(Tumor_Size~., Breast_Cancer_train_rl, method="forward")
 for (metric in c("r2", "adjr2", "Cp", "bic")){plot(model, scale=metric)}
 ```
 
-Las conclusiones son muy parecidas aunque ahora una variable como Regional_Node_Positive_R(3,10] la descarta para incluir y sin embargo considera meter algun nivel de la variable differentiate.
+Las conclusiones son muy parecidas aunque ahora una variable como Regional_Node_Positive_R(3,10] la descarta y sin embargo considera meter algún nivel de la variable differentiate.
 
 
 ### Procesado de variable cualitativas
 
-En base a las que vemos que son significativas, cuando son categóricas tenemos que volverlas numéricas, Lo hacemos para las que han salido significativas anteriormente.
+Volvemos a poner en formato numérico las variables que han salido significativas anteriormente.
 
 ```{r}
 Breast_Cancer_train_mod <-Breast_Cancer_train_rl %>%
@@ -849,7 +850,7 @@ mutate(differentiate_undif = ifelse(Breast_Cancer_train_rl$differentiate =="Undi
 
 ### Ajuste, interpretación y diagnosis del modelo
 
-En base a las variables seleccionadas y despúes de haber procesado las variables cualitativas que vamos a incluir en el modelo para volverlas dummie variables (numéricas de 0 y 1), lanzamos el modelo para analizar resultados (nombre del modelo: modelo1):
+En base a las variables seleccionadas y despúes de haber procesado las variables cualitativas que vamos a incluir en el modelo para convertirlas en variables dummie (numéricas de 0 y 1), lanzamos el modelo para analizar resultados (nombre del modelo: modelo1):
 
 ```{r}
 modelo1<- lm(Tumor_Size ~ T_Stage2 + T_Stage3+T_Stage4+N_Stage2+sixth_Stage_IIIA+sixth_Stage_IIIC+differentiate_poorly+
@@ -857,7 +858,7 @@ modelo1<- lm(Tumor_Size ~ T_Stage2 + T_Stage3+T_Stage4+N_Stage2+sixth_Stage_IIIA
 summary(modelo1)
 ```
 
-Como observamos que las 3 últimas variables o no han entrado porque no tenían valores aunque con el método forward salia que se tenían que incluir o no es tan significativa como es el caso de differentiate para "Poorly differentiated" o por ejemplo el rango de nodos positivos ya que sale un p-valor de 8% con lo que no se rechaza la hipótesis nula (coeficiente de 0).
+Como observamos que las 3 últimas variables o no han entrado porque no tenían valores aunque con el método forward salia que se tenían que incluir o no son tan significativas como es el caso de differentiate para "Poorly differentiated" o por ejemplo el rango de nodos positivos ya que sale un p-valor de 0.08, con lo que no se puede rechazar la hipótesis nula (coeficiente de 0).
 
 Por tanto, optamos por hacer un nuevo modelo en el que las eliminamos (nombre del modelo: modelo2):
 ```{r}
@@ -872,9 +873,9 @@ residuals=modelo2$residuals
 autoplot(modelo2)
 ```
 
-Observando los resudios del modelo se observa que el modelo no es muy bueno porque estos no se distribuyen de manera normal y en estos se observa un ligero grado de heterocedasticidad en el modelo ya que la dispersion de estos aumenta conforme aumentan los valores de la variable respuesta.
+Observando los resudios del modelo, podemos concluir que no es muy bueno porque estos no se distribuyen de manera normal. Además, se observa un ligero grado de heterocedasticidad en el modelo, ya que la dispersión aumenta conforme aumentan los valores de la variable respuesta.
 
-Antes de pasar a hacer un backtest sobre este modelo2, antes vamos a comparar los distintos modelos creados por el estadístico BIC:
+Antes de pasar a hacer un backtest sobre este modelo2, vamos a comparar los distintos modelos creados usando el estadístico BIC:
 
 ```{r}
 paste0("BIC del modelo_inicial1: ",BIC(modelo_inicial1))
@@ -883,7 +884,7 @@ paste0("BIC del modelo1: ",BIC(modelo1))
 paste0("BIC del modelo2: ",BIC(modelo2))
 ```
 
-Se observa que el modelo 2 es el mejor de los modelos pero por muy poco ya que tiene una capacidad de predecir similar pero utiliza menos parametros ya que el BIC penaliza los modelos muy complejos que pueden generar overfitting.
+Se observa que el modelo 2 es el mejor porque aún teniendo una capacidad de predecir similar utiliza menos parámetros (el BIC penaliza los modelos muy complejos que pueden generar overfitting).
 
 Los coeficientes del modelo elegido (modelo2) son los siguientes:
 
@@ -891,14 +892,14 @@ Los coeficientes del modelo elegido (modelo2) son los siguientes:
 coef(modelo2)
 ```
 
-Por último, vamos a mirar que variables saldrian significativas si no utilizaramos las variables T_Stage, N_Stage o sixth_Stage. Al final estas variables están directamente ligadas al tamaño del tumor, sobre todo T_Stage y sixth Stage que a su vez engloba al concepto de T_Stage porque T_Stage toma niveles en función del tamaño del tumor. Es verdad que el resto de variables tambien son descriptivas del grado de cancer salvo la edad, la raza y el marital status y lo interesante sería disponer de más variables como estas últimas para tratar de predecir el tamaño del tumor, es decir, variables sobre el estilo de vida de la persona (fuma/no fuma), sobre otras caracteristicas de la persona (peso) o geograficas (codigo postal, ciudad/campo...) por poner varios ejemplos.
+Por último, vamos a mirar que variables saldrian significativas si no utilizaramos las variables T_Stage, N_Stage o sixth_Stage. Al final, estas variables están directamente ligadas al tamaño del tumor, sobre todo T_Stage y sixth Stage que a su vez engloba al concepto de T_Stage porque T_Stage toma niveles en función del tamaño del tumor. Es verdad que el resto de variables también son descriptivas del grado de cancer salvo la edad, la raza y el marital status y lo interesante sería disponer de más variables como estas últimas para tratar de predecir el tamaño del tumor, es decir, variables sobre el estilo de vida de la persona (fuma/no fuma), sobre otras caracteristicas de la persona (peso) o geográficas (codigo postal, ciudad/campo...) por poner varios ejemplos.
 
 ```{r}
 modelo_prueba <- lm(Tumor_Size~.-T_Stage-N_Stage-`6th_Stage`, data=Breast_Cancer_train_rl)
 summary(modelo_prueba)
 ```
 
-Los resultados son interesantes ya que ahora salen los niveles de nº de nodos positivos como significativa asi como el porcentaje de nodos positivos sobre los examinados o una variable de las que comentabamos anteriormente que no tiene que ver con el grado del cancer como la edad en el rango de personas mas mayores de la muestra. En cualquier caso se observa que no disponemos de variables para predecir el tamaño del tumor si no utilizamos las obvias ya que el R² ajustado cae a un 12%.
+Los resultados son interesantes ya que ahora salen los niveles de nº de nodos positivos como significativa asi como el porcentaje de nodos positivos sobre los examinados o una variable de las que comentabamos anteriormente que no tiene que ver con el grado del cáncer como la edad en el rango de personas mas mayores de la muestra. En cualquier caso, se observa que no disponemos de variables para predecir el tamaño del tumor si no utilizamos las obvias ya que el R² ajustado cae a un 12%.
 
 ### Backtest contra el dataset de test
 
@@ -906,7 +907,7 @@ Ahora vamos a recoger el data set test y le vamos a lanzar el modelo.
 
 Una vez lanzado, vamos a ordenar el tamaño del tumor de menor a mayor en el dataset de validación y partir el dataset en 10 partes iguales (las primeras partes saran las de las pacientes de tamaño del tumor mas pequeño).
 
-Por último vamos a comparar los resultados por estos grupos para ver si el tumor medio real del predecido es muy diferente.
+Por último, vamos a comparar los resultados por estos grupos para ver si el tumor medio real es muy distinto al predecido.
 
 ```{r}
 Breast_Cancer_test_mod<-Breast_Cancer_test %>%
@@ -944,9 +945,9 @@ ggplot(tabla,aes(x = grupo)) +
   theme(plot.title = element_text(hjust = 0.5))
 ```
 
-Viendo los resultados se observa que en general predice muy bien sobre el dataset de test con lo que parece que el modelo funciona.
+Viendo los resultados, se observa que, en general, predice muy bien sobre el dataset de test con lo que parece que el modelo funciona.
 
-Ahora vamos a hacer cross validation, que basicamente significa que se particiona el dataset de train en k partes y para parte se divide un un subset de train y de test y se lanza el modelo para las k partes y luego se promedian los resultados. Para ver que nuestro modelo seleccionado es robusto (modelo2), nuestros coeficientes resultantes del cross validation deberían ser parecidos.
+Ahora vamos a hacer cross validation, que basicamente significa que se particiona el dataset de train en k partes y cada parte se divide a su vez en un subset de train y de test. Se lanza el modelo para las k partes y luego se promedian los resultados. Para poder determinar que nuestro modelo seleccionado es robusto (modelo2), nuestros coeficientes resultantes del cross validation deberían ser parecidos.
 
 Primero creamos la función resumen en la que definimos que vamos a hacer 10 particiones
 ```{r}
@@ -981,11 +982,11 @@ Comparando los coeficientes se observa que son muy parecidos en el modelo 2 y en
 
 ## Conclusiones
 
-* La muestra recoge mujeres pacientes de cancer de mama que en general están entre los 50 y 60 años, son blancas, están casada, han sobrevivido en torno a 6 años y con un nivel de cáncer de mama moderados según los distintos paramentros del nivel de cáncer del dataset. De ahí que al final del estudio un 85% haya sobrevivido.
-* Únicamente habia 19 datos faltantes que se han eliminado porque no suponían más que el 0.47% de la muestra y no incluian ni la variable respuesta que es si sobreviven o no.
+* La muestra recoge mujeres pacientes de cáncer de mama que en general están entre los 50 y 60 años, son blancas, están casadas, han sobrevivido en torno a 6 años y con niveles de cáncer de mama moderados según los distintos paramentros del nivel de cáncer del dataset. De ahí que al final del estudio un 85% hayan sobrevivido.
+* Únicamente habia 19 datos faltantes que se han eliminado porque no suponían más que el 0.47% de la muestra y no incluían la variable respuesta que es si sobreviven o no.
 * Respecto a las correlaciones entre las variables numéricas:
-  + Se observa que los meses sobrevividos tiene una correlacion inversa lineal con si la mujer fallece.
+  + Se observa que los meses sobrevividos tienen una correlacion inversa lineal con si la mujer fallece.
   + Existe cierta correlación de que cuando una mujer tiene detectados más nodos linfáticos positivos o tiene un mayor tamaño del tumor, hay más probabilidad tiene de fallecer.
 * En las variables categóricas se ve que hay tendencias con respecto a la probabilidad de fallecimiento menos en las variables de raza y estado civil donde no se observa ningún patrón claro.
-* Para hacer la regresión lineal multiple hemos elegido como variable respuesta el tamaño del tumor porque con la variable status (si ha fallecido o no) no se podría hacer ya que se trataria más de un problema de clasificación supervisada.
-* El modelo resultante pasa el backtest y en el cross validation se observa que los coeficientes no varían apenas. Tiene un R² ajustado relativamente aceptable de un 76% y si bien los residuos no se distribuyen de forma normal, la variable respuesta se predice relativamente bien con pocas variables explicativas (T_Stage, N_State y 6thStage). Sin embargo, el problema del modelo es que predecimos la variable respuesta con variables que en el fondo hablan de esta y son meras clasificaciones del grado de cáncer. De hecho, si tratamos de hacer el modelo sin incluir estas variables los resultados son muy pobres ya que no disponemos de otras variables que tengan relacion con la variable respuesta y que no esten ligadas al grado de cáncer.
+* Para hacer la regresión lineal multiple hemos elegido como variable respuesta el tamaño del tumor porque con la variable status (si ha fallecido o no) no se podría hacer ya que se trataria de un problema de clasificación supervisada.
+* El modelo resultante pasa el backtest y en el cross validation se observa que los coeficientes no varían apenas. Tiene un R² ajustado relativamente aceptable de un 76% y si bien los residuos no se distribuyen de forma normal, la variable respuesta se predice relativamente bien con pocas variables explicativas (T_Stage, N_State y 6thStage). Sin embargo, el problema del modelo es que predecimos la variable respuesta con variables que en el fondo hablan de esta y son meras clasificaciones del grado de cáncer. De hecho, si tratamos de hacer el modelo sin incluir estas variables los resultados son muy pobres ya que no disponemos de otras variables que tengan relación con la variable respuesta y que no esten ligadas al grado de cáncer.
