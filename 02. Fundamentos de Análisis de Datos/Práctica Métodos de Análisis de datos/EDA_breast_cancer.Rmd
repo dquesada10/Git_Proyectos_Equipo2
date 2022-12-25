@@ -129,7 +129,7 @@ version$version.string
 Miramos los primeros registros del dataset:
 ```{r}
 Breast_Cancer <- read_excel("Breast_Cancer.xlsx")
-Breast_Cancer.head(10)
+head(Breast_Cancer,10)
 ```
 
 Por otro lado, la estructura de las variables sería la siguiente:
@@ -326,7 +326,7 @@ for(i in 1:p$nrow) {
 p
 ```
 
-De forma clara únicamente se observa como a menores meses de supervivencia hay mas fallecidas.
+Viendo estas gráficas vemos que existe un gran solapamiento entre las variables, por lo tanto, no existe correlación entre ellas en general. De forma clara, únicamente se observa como a menores meses de supervivencia hay mas fallecidas.
 
 
 ### Analisis Univariante: variables categóricas
