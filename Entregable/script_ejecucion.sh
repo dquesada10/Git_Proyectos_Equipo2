@@ -1,0 +1,1 @@
+python3 MrJob_Happiness_G2_ejecutable5.py -r local profe_S.json --file AFINN-111.txt
