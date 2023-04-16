@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Grafo de la musica escuchada en el ultimo año</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+
+<style>
+    .links line {
+        stroke: #999;
+        stroke-opacity: 0.6;
+    }
+
+    .nodes circle {
+        stroke: #fff;
+        stroke-width: 5px;
+    }
+
+    text {
+        font-family: sans-serif;
+        font-size: 30px;
+    }
+
+    div.tooltip {
+        position: absolute;
+        text-align: center;
+        padding: 2px;
+        font: 30px sans-serif;
+        border: 0px;
+        border-radius: 8px;
+        pointer-events: none;
+    }
+</style>
+
+<body>
+<div id="content">
+    <svg width="1500" height="830">
+        <rect width="1500" height="830" style="stroke-width: 10px; stroke: black; fill-opacity: 0.0"/>
+    </svg>
+</div>
+
+<script>
+    var svg = d3.select("svg"),
+        width = +svg.attr("width"),
+        height = +svg.attr("height");
+
+    var pattern_def = svg.append("defs");
+
+    var simulation = d3.forceSimulation()
+            .force("link", d3.forceLink()
+                .id(function(d) { return d.id; })
+                .distance(function(d) { // Add this function
+                    return linkDistanceScale(d.edge_betweenness);
+                })
+            )
+            .force("charge", d3.forceManyBody().strength(-5.2))
+            .force("collide", d3.forceCollide().radius(function (d) {
+                return calculateSize(d)+5
+            }))
+            .force("center", d3.forceCenter(width / 2, height / 2));
+
+    var edgeWidthScale = d3.scaleLinear().domain([0, 1]).range([1, 10]);
+    var linkDistanceScale = d3.scaleLinear().domain([0, 1]).range([30, 300]);
+
+
+    var color = d3.scaleOrdinal(d3.schemeCategory10);
+    var timesScale = d3.scaleLinear().domain([0, 60]).range([1, 40]);
+
+    var div = d3.select("body").append("div")
+        .attr("class", "tooltip")
+        .style("opacity", 0);
+
+    d3.json("grafo_musica_grupo3.json").then(function (graph){
+
+        var idImage=1;
+        var link = svg.append("g")
+            .attr("class", "links")
+            .selectAll("line")
+            .data(graph.links)
+            .enter().append("line")
+            .attr("stroke-width", function(d) {
+                return edgeWidthScale(d.edge_betweenness);
+            });
+
+        var node = svg.append("g")
+            .attr("class", "nodes")
+            .selectAll("g")
+            .data(graph.nodes)
+            .enter().append("g")
+            .call(d3.drag()
+                .on("start", dragstarted)
+                .on("drag", dragged)
+                .on("end", dragended));
+
+        node.append("title")
+            .text(function (d) {
+                return "Name: " + d.id + "\n" +
+                    "Centralidad PageRank: " + d.centrality + "\n" + "\n" +
+                    "Seguidores: " + d.followers + "\n" +
+                    "Popularidad: " + d.popularity + "\n" + "\n" +
+                    "Nº de veces escuchada: " + d.n_times_listen + "\n" +
+                    "Nº de minutos escuchada: " + d.n_min_played + "\n" +
+                    "Grado de bailabilidad: " + d.danceability + "\n" +
+                    "Grado de energía: " + d.energy + "\n" +
+                    "Grado de sonoridad: " + d.loudness + "\n" +
+                    "Grado de carácter hablado: " + d.speechiness + "\n" +
+                    "Grado de Tempo: " + d.tempo;
+            });
+
+        var circles = node.append("circle")
+            .attr("r", function (d) {
+                return calculateSize(d)
+            })
+            .attr("fill", function (d) {
+                if (d['image']) {
+                    pattern_def.append("pattern")
+                        .attr("id", "image-" + idImage)
+                        .attr("patternContentUnits", "objectBoundingBox")
+                        .attr("width", "100%")
+                        .attr("height", "100%")
+                        .attr("viewBox", "0 0 1 1");
+
+                    d3.select("#" + "image-" + idImage)
+                        .append("image")
+                        .attr("xlink:href", d.image)
+                        .attr("x", 0)
+                        .attr("y", 0)
+                        .attr("width", "1")
+                        .attr("height", "1")
+                        .attr("preserveAspectRatio", "none");
+                    var returnVal = "url(#image-" + idImage + ")";
+                    idImage++;
+                    return returnVal;
+                } else {
+                    return colorForType(d);
+                }
+            })
+            .style("stroke", function (d) {
+                return colorForType(d)
+            })
+            .on("mouseover", function(event, d) {
+                div.transition()
+                    .duration(200)
+                    .style("opacity", .9);
+                div.html(d['id'])
+                    .style("left", (event.pageX) + "px")
+                    .style("top", (event.pageY - 28) + "px")
+                    .style('background', colorForType(d));
+
+            })
+            .on("mouseout", function(d) {
+                div.transition()
+                    .duration(500)
+                    .style("opacity", 0);
+            })
+            .on("dblclick", (event, d) => {
+                if (d['type'] === 'track') {
+                    window.open(d['uri'])
+                }
+            });
+
+        var setEvents = node
+            .on( 'mouseenter', function() {
+                // select element in current context
+                d3.select( this ).raise().select('circle')
+                    .transition()
+                    .attr("r", 100);
+            })
+            // set back
+            .on( 'mouseleave', function() {
+                d3.select( this ).select('circle')
+                    .transition()
+                    .attr("r", function(d) {
+                        return calculateSize(d)
+                    });
+            });
+
+        simulation
+            .nodes(graph.nodes)
+            .on("tick", ticked);
+
+        simulation.force("link")
+            .links(graph.links);
+
+        function ticked() {
+            link
+                .attr("x1", function(d) { return d.source.x; })
+                .attr("y1", function(d) { return d.source.y; })
+                .attr("x2", function(d) { return d.target.x; })
+                .attr("y2", function(d) { return d.target.y; });
+
+            node
+                .attr("transform", function(d) {
+                    return "translate(" + d.x + "," + d.y + ")";
+                })
+        }
+
+
+        function dragstarted(event, d) {
+            if (!event.active) simulation.alphaTarget(0.3).restart();
+            d.fx = d.x;
+            d.fy = d.y;
+        }
+
+        function dragged(event, d) {
+            d.fx = event.x;
+            d.fy = event.y;
+        }
+
+        function dragended(event, d) {
+            if (!event.active) simulation.alphaTarget(0);
+            d.fx = null;
+            d.fy = null;
+        }
+    });
+
+    function calculateSize(d) {
+        switch (d['type']) {
+            case 'track':
+            case 'artist':
+                return timesScale(d['n_times_listen'])
+            default: return 50;
+        }
+    }
+
+    function colorForType(d) {
+        switch (d["type"]) {
+            case 'artist': return color(0);
+            case 'genre': return color(1);
+            case 'track': return color(2);
+            default: return color(3);
+        }
+    }
+</script>
+</body>
+</html>
